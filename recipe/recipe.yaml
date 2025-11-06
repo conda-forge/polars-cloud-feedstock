@@ -31,7 +31,7 @@ build:
           - copy %RECIPE_DIR%\cargo-auditable-wrapper.bat %BUILD_PREFIX%\Library\bin\cargo-auditable-wrapper.bat
       - python -m pip install . -vv
       - cargo-bundle-licenses --format yaml --output ../THIRD_PARTY.yml
-  number: 0
+  number: 1
 
 requirements:
   build:
@@ -41,6 +41,11 @@ requirements:
     - cargo-auditable
     - cargo-bundle-licenses
     - libprotobuf
+    - if: build_platform != target_platform
+      then:
+        - python
+        - cross-python_${{ target_platform }}
+        - maturin >=1,<2
   host:
     - python
     - pip
@@ -52,6 +57,9 @@ requirements:
     - polars-runtime-64
     - cloudpickle
     - typing-extensions
+  ignore_run_exports:
+    from_package:
+      - cross-python_${{ target_platform }}
 
 tests:
   - python:
