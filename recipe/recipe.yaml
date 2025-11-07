@@ -31,7 +31,7 @@ build:
           - copy %RECIPE_DIR%\cargo-auditable-wrapper.bat %BUILD_PREFIX%\Library\bin\cargo-auditable-wrapper.bat
       - python -m pip install . -vv
       - cargo-bundle-licenses --format yaml --output ../THIRD_PARTY.yml
-  number: 1
+  number: 2
 
 requirements:
   build:
@@ -64,16 +64,14 @@ requirements:
 tests:
   - python:
       imports:
-      - polars_cloud
+        - polars_cloud
       pip_check: true
       python_version: ${{ python_min }}.*
   - script:
       content:
         - if: win
           then: abi3audit %PREFIX%/Lib/site-packages/polars_cloud/polars_cloud.pyd -s -v --assume-minimum-abi3 ${{ python_min }}
-        - if: not win
-          then:
-            # Need to set SP_DIR because of https://github.com/prefix-dev/rattler-build/issues/1733
+          else:
             - export SP_DIR=$(python -c "import site; print(site.getsitepackages()[0])")
             - abi3audit $SP_DIR/polars_cloud/polars_cloud.abi3.so -s -v --assume-minimum-abi3 ${{ python_min }}
     requirements:
