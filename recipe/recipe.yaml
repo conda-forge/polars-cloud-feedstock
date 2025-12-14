@@ -1,6 +1,6 @@
 context:
   name: polars-cloud
-  version: "0.4.0"
+  version: "0.4.2"
 
 package:
   name: ${{ name|lower }}
@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://github.com/pola-rs/${{ name }}-client/archive/refs/tags/client-${{ version }}.tar.gz
-  sha256: 12e38c9a1d7af9e49f7417e7f61a6ae4f2abd35092ff933bee2144c7b9929a93
+  sha256: ed90fe69ef141a7d87c635cd17110599a84cf70bf822d22bfa9a46d789487f2b
 
 build:
   python:
@@ -31,7 +31,7 @@ build:
           - copy %RECIPE_DIR%\cargo-auditable-wrapper.bat %BUILD_PREFIX%\Library\bin\cargo-auditable-wrapper.bat
       - python -m pip install . -vv
       - cargo-bundle-licenses --format yaml --output ../THIRD_PARTY.yml
-  number: 2
+  number: 0
 
 requirements:
   build:
