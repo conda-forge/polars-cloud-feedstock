@@ -1,6 +1,6 @@
 context:
   name: polars-cloud
-  version: "0.4.2"
+  version: "0.4.3"
 
 package:
   name: ${{ name|lower }}
@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://github.com/pola-rs/${{ name }}-client/archive/refs/tags/client-${{ version }}.tar.gz
-  sha256: ed90fe69ef141a7d87c635cd17110599a84cf70bf822d22bfa9a46d789487f2b
+  sha256: 5055ac1d446f342e3cdf252844dd02ea6fa95b10d0c494701a103b9d91ea4537
 
 build:
   python:
