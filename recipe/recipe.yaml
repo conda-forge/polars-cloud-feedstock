@@ -53,7 +53,7 @@ requirements:
     - libprotobuf
   run:
     - python
-    - polars
+    - polars ==1.37.1
     - polars-runtime-64
     - cloudpickle
     - typing-extensions
