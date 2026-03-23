@@ -12,3 +12,4 @@ github:
 test: native_and_emulated
 bot:
   inspection: update-grayskull
+  automerge: true
