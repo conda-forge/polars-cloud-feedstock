@@ -1,6 +1,6 @@
 context:
   name: polars-cloud
-  version: "0.5.0"
+  version: 0.6.0
 
 package:
   name: ${{ name|lower }}
@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://github.com/pola-rs/${{ name }}-client/archive/refs/tags/client-${{ version }}.tar.gz
-  sha256: cdc4c0a5c5bf46da051d3f870f7741615becd990a144188cde886ab5cadd1689
+  sha256: ff0ade952e6b9b80018b6441797d6cc1e1e076972942ed3f28968e038ee82c4b
 
 build:
   python:
@@ -53,10 +53,8 @@ requirements:
     - libprotobuf
   run:
     - python
-    - polars ==1.38.1
-    - polars-runtime-64
-    - cloudpickle
-    - typing-extensions
+    - polars ==1.39.3
+    - typing_extensions >=4.0
   ignore_run_exports:
     from_package:
       - cross-python_${{ target_platform }}
@@ -80,7 +78,7 @@ tests:
 
 about:
   homepage: https://cloud.pola.rs
-  summary: 'Python client for Polars Cloud'
+  summary: Python client for Polars Cloud
   description: |
     Built on top of the popular open source project, Polars Cloud enables you to write DataFrame code once and run it anywhere. The distributed engine available with Polars Cloud allows you to scale your Polars queries beyond a single machine.
   license: MIT
