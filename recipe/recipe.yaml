@@ -1,6 +1,6 @@
 context:
   name: polars-cloud
-  version: 0.9.0
+  version: 0.10.0
 
 package:
   name: ${{ name|lower }}
@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://github.com/pola-rs/${{ name }}-client/archive/refs/tags/client-${{ version }}.tar.gz
-  sha256: cb18fed8e034d599ee6f569535249cef5019524f8376a9ee26cc67da784cf124
+  sha256: 2d029af0b8f3d94df30c64fb747375d59da07768cb44fe6334da2ecd6c55ff46
 
 build:
   python:
@@ -53,7 +53,7 @@ requirements:
     - libprotobuf
   run:
     - python
-    - polars ==1.42.1
+    - polars ==1.43.2
     - typing_extensions >=4.0
   ignore_run_exports:
     from_package:
