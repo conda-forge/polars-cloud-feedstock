@@ -1,6 +1,6 @@
 context:
   name: polars-cloud
-  version: 0.11.3
+  version: 0.12.0
 
 package:
   name: ${{ name|lower }}
@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://github.com/pola-rs/${{ name }}-client/archive/refs/tags/client-${{ version }}.tar.gz
-  sha256: fa15927c6a3959bac5cd9792f9536760d64fc9476b365f246654a148dcbd9e4b
+  sha256: 66cf28ec9c18147e757e8098e59b8be2f6902daa126c8c4fb17896503da6ac31
 
 build:
   python:
@@ -53,25 +53,38 @@ requirements:
     - libprotobuf
   run:
     - python
-    - polars ==1.44.2
+    - polars ==2.0.0
     - typing_extensions >=4.5
-  ignore_run_exports:
-    from_package:
-      - cross-python_${{ target_platform }}
 
 tests:
-  - python:
-      imports:
-        - polars_cloud
-      pip_check: true
-      python_version: ${{ python_min }}.*
+  - if: not win
+    then:
+      python:
+        imports:
+          - polars_cloud
+        pip_check: true
+        python_version:
+          - ${{ python_min }}.*
+          - "*"
+  # polars_cloud resolves its config directory on import, which fails in the
+  # Windows test environment unless POLARS_CLOUD_CONFIG_DIR is set
+  - if: win
+    then:
+      script:
+        env:
+          POLARS_CLOUD_CONFIG_DIR: polars_cloud_config
+        content:
+          - python -c "import polars_cloud"
+          - python -m pip check
+      requirements:
+        run:
+          - python ${{ python_min }}.*
+          - pip
   - script:
       content:
         - if: win
-          then: abi3audit %PREFIX%/Lib/site-packages/polars_cloud/polars_cloud.pyd -s -v --assume-minimum-abi3 ${{ python_min }}
-          else:
-            - export SP_DIR=$(python -c "import site; print(site.getsitepackages()[0])")
-            - abi3audit $SP_DIR/polars_cloud/polars_cloud.abi3.so -s -v --assume-minimum-abi3 ${{ python_min }}
+          then: abi3audit %SP_DIR%\polars_cloud\polars_cloud.pyd -s -v --assume-minimum-abi3 ${{ python_min }}
+          else: abi3audit $SP_DIR/polars_cloud/polars_cloud.abi3.so -s -v --assume-minimum-abi3 ${{ python_min }}
     requirements:
       run:
         - abi3audit
