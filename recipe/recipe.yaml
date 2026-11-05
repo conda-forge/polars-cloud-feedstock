@@ -1,6 +1,6 @@
 context:
   name: polars-cloud
-  version: 0.12.0
+  version: 0.13.0
 
 package:
   name: ${{ name|lower }}
@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://github.com/pola-rs/${{ name }}-client/archive/refs/tags/client-${{ version }}.tar.gz
-  sha256: 66cf28ec9c18147e757e8098e59b8be2f6902daa126c8c4fb17896503da6ac31
+  sha256: 56a0780b455acf8998a99caf4c7f5b7af14ccacef70740f5b243b570c2b26559
 
 build:
   python:
@@ -53,9 +53,8 @@ requirements:
     - libprotobuf
   run:
     - python
-    - polars ==2.0.0
+    - polars ==2.1.0
     - typing_extensions >=4.5
-
 tests:
   - if: not win
     then:
@@ -65,7 +64,7 @@ tests:
         pip_check: true
         python_version:
           - ${{ python_min }}.*
-          - "*"
+          - '*'
   # polars_cloud resolves its config directory on import, which fails in the
   # Windows test environment unless POLARS_CLOUD_CONFIG_DIR is set
   - if: win
