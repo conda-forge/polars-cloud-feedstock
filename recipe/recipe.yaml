@@ -6,98 +6,56 @@ package:
   name: ${{ name|lower }}
   version: ${{ version }}
 
+# Starting with 0.13.0, polars-cloud is a deprecated wrapper around polars-nanook
+# that is only published as a wheel.
 source:
-  url: https://github.com/pola-rs/${{ name }}-client/archive/refs/tags/client-${{ version }}.tar.gz
-  sha256: 56a0780b455acf8998a99caf4c7f5b7af14ccacef70740f5b243b570c2b26559
+  - url: https://pypi.org/packages/py3/p/polars-cloud/polars_cloud-${{ version }}-py3-none-any.whl
+    sha256: 80fcee85ccb3572684bb694b225dd0be4534a1adf9e72d74e86993458ea69d6a
+  # the wheel does not ship a license file
+  - url: https://raw.githubusercontent.com/pola-rs/polars-cloud-client/client-${{ version }}/client/LICENSE
+    sha256: 5cf22724ea53abcfbc2ed22b0c295672904e932427e3b2522b25e76b1baa3798
+    file_name: LICENSE
 
 build:
-  python:
-    version_independent: true
-    entry_points:
-      - pc=polars_cloud.__main__:cli
-  skip:
-    - not (match(python, python_min ~ ".*") and is_abi3)
-  script:
-    env:
-      CARGO_PROFILE_RELEASE_STRIP: symbols
-      CARGO_PROFILE_RELEASE_LTO: fat
-      CARGO: cargo-auditable-wrapper${{ '' if unix else '.bat' }}
-    content:
-      - cd client
-      - if: unix
-        then:
-          - cp ${RECIPE_DIR}/cargo-auditable-wrapper.sh ${BUILD_PREFIX}/bin/cargo-auditable-wrapper
-        else:
-          - copy %RECIPE_DIR%\cargo-auditable-wrapper.bat %BUILD_PREFIX%\Library\bin\cargo-auditable-wrapper.bat
-      - python -m pip install . -vv
-      - cargo-bundle-licenses --format yaml --output ../THIRD_PARTY.yml
   number: 0
+  noarch: python
+  python:
+    entry_points:
+      - pc=polars_nanook:cli_main
+  script: python -m pip install polars_cloud-${{ version }}-py3-none-any.whl -vv --no-deps --no-build-isolation
 
 requirements:
-  build:
-    - ${{ compiler('c') }}
-    - ${{ compiler('rust') }}
-    - ${{ stdlib('c') }}
-    - cargo-auditable
-    - cargo-bundle-licenses
-    - libprotobuf
-    - if: build_platform != target_platform
-      then:
-        - python
-        - cross-python_${{ target_platform }}
-        - maturin >=1,<2
   host:
-    - python
+    - python ${{ python_min }}.*
     - pip
-    - maturin >=1,<2
-    - libprotobuf
   run:
-    - python
-    - polars ==2.1.0
-    - typing_extensions >=4.5
+    - python >=${{ python_min }}
+    - polars-nanook ==${{ version }}
+
 tests:
-  - if: not win
-    then:
-      python:
-        imports:
-          - polars_cloud
-        pip_check: true
-        python_version:
-          - ${{ python_min }}.*
-          - '*'
-  # polars_cloud resolves its config directory on import, which fails in the
-  # Windows test environment unless POLARS_CLOUD_CONFIG_DIR is set
-  - if: win
-    then:
-      script:
-        env:
-          POLARS_CLOUD_CONFIG_DIR: polars_cloud_config
-        content:
-          - python -c "import polars_cloud"
-          - python -m pip check
-      requirements:
-        run:
-          - python ${{ python_min }}.*
-          - pip
+  - python:
+      imports:
+        - polars_cloud
+      pip_check: true
+      python_version:
+        - ${{ python_min }}.*
+        - "*"
   - script:
+      env:
+        NANOOK_CONFIG_DIR: nanook_config
       content:
-        - if: win
-          then: abi3audit %SP_DIR%\polars_cloud\polars_cloud.pyd -s -v --assume-minimum-abi3 ${{ python_min }}
-          else: abi3audit $SP_DIR/polars_cloud/polars_cloud.abi3.so -s -v --assume-minimum-abi3 ${{ python_min }}
-    requirements:
-      run:
-        - abi3audit
+        - pc --help
 
 about:
-  homepage: https://cloud.pola.rs
-  summary: Python client for Polars Cloud
+  homepage: https://pola.rs/nanook
+  summary: "Deprecated: renamed to polars-nanook"
   description: |
-    Built on top of the popular open source project, Polars Cloud enables you to write DataFrame code once and run it anywhere. The distributed engine available with Polars Cloud allows you to scale your Polars queries beyond a single machine.
+    Polars Cloud is now Polars Nanook. This package installs polars-nanook plus a deprecated
+    polars_cloud module that re-exports it. Switch to `import polars_nanook as pn`, the
+    `nanook` CLI, and depend on polars-nanook instead.
   license: MIT
-  license_file:
-    - client/LICENSE
-    - THIRD_PARTY.yml
-  documentation: https://cloud.pola.rs
+  license_file: LICENSE
+  documentation: https://docs.nanook.pola.rs/
   repository: https://github.com/pola-rs/polars-cloud-client
 
 extra:
